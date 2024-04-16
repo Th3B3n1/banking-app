@@ -57,6 +57,11 @@ app.get("/commission", async (req, res) =>
     }
 })
 
+app.post("/login", jsonParser, async (req, res) =>
+{
+    
+})
+
 app.post("/commission", jsonParser, async (req, res) => 
 {
     if (req.body != undefined)
