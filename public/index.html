@@ -6,9 +6,7 @@
     <title>Shopping list</title>
 </head>
 <body>
-    <button id="post">POST example</button>
-    <button id="delete">DELETE example</button>
-    <button id="put">PUT example</button>
+    <button id="post">login</button>
     <br>
     <h3>Error message:</h3>
     <div id="response"></div>
@@ -29,6 +27,7 @@
         {
             document.getElementById("response").innerHTML = await fetch("https://localhost:5555/login", postOption).then(response => response.json()).then(data => Object.values(data));
         })
+        /*
         //DELETE
         let deleteOption = {
             method: "DELETE"
@@ -57,6 +56,7 @@
         {
             document.getElementById("response").innerHTML = await fetch("https://localhost:5555/list?id=2", putOption).then(response => response.json()).then(data => Object.values(data));
         })
+        */
     </script>
 </body>
 </html>
