@@ -33,6 +33,8 @@ app.get("/", (req, res) =>
     res.sendStatus(200);
 })
 
+//LOGIN endpoint - either give a valid token or the email and password
+//Response: {token: (undefined or a valid token to save), userData: (personal info of the user)}
 app.post("/login", jsonParser, async (req, res) =>
 {
     if (req.body != undefined)
@@ -48,7 +50,7 @@ app.post("/login", jsonParser, async (req, res) =>
                     {
                         let usersQuery = await db.query("SELECT email, fullname, balance FROM users WHERE id = ?", tokenQuery[0][0].userid)
                         res.status(200);
-                        res.send(usersQuery[0][0]).end();
+                        res.send({token: undefined, userData: usersQuery[0][0]}).end();
                     }
                     else
                     {
@@ -82,14 +84,14 @@ app.post("/login", jsonParser, async (req, res) =>
                             if (isTokenValidBasedOnCurrentDateTime(tokenQuery[0][0].date, tokenExpiryInDays))
                             {
                                 res.status(200);
-                                res.send(usersQuery[0][0]).end();
+                                res.send({token: tokenQuery[0][0], userData: usersQuery[0][0]}).end();
                             }
                             else
                             {
                                 let token = tokenGenerator(20);
                                 await db.query("INSERT INTO tokens(userid, date, token) VALUES(?, ?, ?)", [usersQuery[0][0].id, new Date(), token]);
                                 res.status(200);
-                                res.send(usersQuery[0][0]).end();
+                                res.send({token: token, userData: usersQuery[0][0]}).end();
                             }
                         }
                         else
