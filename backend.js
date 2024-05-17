@@ -35,39 +35,16 @@ app.get("/", (req, res) =>
 
 //LOGIN endpoint - either give a valid token or the email and password
 //Response: {token: (undefined or a valid token to save), userData: (personal info of the user)}
-app.post("/login", jsonParser, async (req, res) =>
+app.post("/login", jsonParser, seamlessAuth, async (req, res) =>
 {
     if (req.body != undefined)
     {
         if (req.body.token != undefined)
         {
-            try
-            {
-                let tokenQuery = await db.query("SELECT userid, date, token FROM tokens WHERE token = ?", req.body.token);
-                if (tokenQuery[0].length > 0)
-                {
-                    if (isTokenValidBasedOnCurrentDateTime(tokenQuery[0][0].date, tokenExpiryInDays))
-                    {
-                        let usersQuery = await db.query("SELECT email, fullname, balance FROM users WHERE id = ?", tokenQuery[0][0].userid)
-                        res.status(200);
-                        res.send({token: undefined, userData: usersQuery[0][0]}).end();
-                    }
-                    else
-                    {
-                        res.send({"message": "INFO: The token expired. Please log in again."});
-                    }
-                }
-                else
-                {
-                    res.status(404);
-                    res.send({"message": "ERROR: Token not found. Please log in again."}).end();
-                }
-            }
-            catch (error)
-            {
-                res.status(503);
-                res.send({"message": "ERROR: " + error}).end();
-            }
+            let tokenQuery = await db.query("SELECT userid FROM tokens WHERE token = ?", req.body.token);
+            let usersQuery = await db.query("SELECT fullname, balance FROM users WHERE id = ?", tokenQuery[0][0].userid);
+            res.status(200);
+            res.send({token: undefined, userData: usersQuery[0][0]})
         }
         else if (req.body.email != undefined && req.body.password != undefined)
         {
@@ -75,7 +52,7 @@ app.post("/login", jsonParser, async (req, res) =>
             {
                 try
                 {
-                    let usersQuery = await db.query("SELECT * FROM users WHERE email = ?", req.body.email);
+                    let usersQuery = await db.query("SELECT id, email, password FROM users WHERE email = ?", req.body.email);
                     if (usersQuery[0].length > 0)
                     {
                         if (await bcrypt.compare(req.body.password, usersQuery[0][0].password))
@@ -136,9 +113,60 @@ app.post("/register", jsonParser, async (req, res) =>
     let hash = await bcrypt.hash(req.body.password, saltRounds)  
 })
 
+app.post("/updateProfile", jsonParser, seamlessAuth, async (req, res) =>
+{
+    console.log("asd")
+    //await db.query("UPDATE users SET")
+})
+
 server.listen(5555, () => {
     console.log("Backend up! Avaiable at: localhost:5555")
 });
+
+async function seamlessAuth(req, res, next)
+{
+    if (req.body != undefined)
+    {
+        if (req.body.token != undefined)
+        {
+            try
+            {
+                let tokenQuery = await db.query("SELECT userid, date, token FROM tokens WHERE token = ?", req.body.token);
+                if (tokenQuery[0].length > 0)
+                {
+                    if (isTokenValidBasedOnCurrentDateTime(tokenQuery[0][0].date, tokenExpiryInDays))
+                    {
+                        next();
+                    }
+                    else
+                    {
+                        res.send({"message": "INFO: The token expired. Please log in again."}).end();
+                    }
+                }
+                else
+                {
+                    res.status(404);
+                    res.send({"message": "ERROR: Token not found. Please log in again."}).end();
+                }
+            }
+            catch (error)
+            {
+                res.status(503);
+                res.send({"message": "ERROR: " + error}).end();
+            }
+        }
+        else
+        {
+            res.status(400);
+            res.send({"message": "ERROR: Values are not defined."}).end();
+        }
+    }
+    else
+    {
+        res.status(400);
+        res.send({"message": "ERROR: The request's body is empty."}).end();
+    }
+}
 
 function isTokenValidBasedOnCurrentDateTime(date, offset)
 {
