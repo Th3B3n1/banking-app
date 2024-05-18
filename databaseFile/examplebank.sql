@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1
--- Létrehozás ideje: 2024. Máj 16. 11:03
+-- Létrehozás ideje: 2024. Máj 18. 17:02
 -- Kiszolgáló verziója: 10.4.32-MariaDB
 -- PHP verzió: 8.2.12
 
@@ -60,7 +60,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `email`, `password`, `fullname`, `balance`) VALUES
-(1, 'test@test.hu', '$2b$10$JEDBB/z3v2IHqigu3ztV8eO8CdNZeRGyud0XBH/d/cuY.0aMGILRS', 'Test Test', 0);
+(1, 'test@test.hu', '$2b$10$8pAEfdDQqPspeSU4ZVUAJeP1QAQMzTl80O/DwFgu3cbT6PQgFICqG', 'Test Test', 0);
 
 --
 -- Indexek a kiírt táblákhoz

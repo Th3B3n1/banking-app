@@ -28,10 +28,15 @@ const saltRounds = 10;
 const tokenExpiryInDays = 30;
 const errorMessages = Object.freeze(
 {
-    ERR_INTERNAL_SERVER: "",
-    ERR_REQ_UNDEFINED_BODY: "",
-    ERR_REQ_UNDEFINED_BODY_VALUES: "",
-    ERR_REQ_INVALID_BODY_VALUES: ""
+    ERR_INTERNAL_SERVER: "ERROR: Internal server error: ",
+    ERR_REQ_UNDEFINED_BODY: "ERROR: The request's body is empty.",
+    ERR_REQ_UNDEFINED_BODY_VALUES: "ERROR: Values are not defined.",
+    ERR_REQ_INVALID_BODY_VALUES: "ERROR: Invalid data was given.",
+    ERR_INVALID_CREDENTIALS: "ERROR: The given email and password is not valid."
+})
+const infoMessages = Object.freeze(
+{
+
 })
 
 app.use(express.static(path.join(__dirname, "public")));
@@ -53,39 +58,17 @@ app.get("/register")
 
 //LOGIN endpoint - either give a valid token or the email and password
 //Response: {token: (undefined or a valid token to save), userData: (personal info of the user)}
-app.post("/login", jsonParser, seamlessAuth, async (req, res) =>
+app.post("/login", jsonParser, async (req, res) =>
 {
     if (req.body != undefined)
     {
         if (req.body.token != undefined)
         {
-            try
-            {
-                let userId = res.locals.userId;
-                let usersQuery = await db.query("SELECT fullname, balance FROM users WHERE id = ?", userId);
-                if (usersQuery[0].length > 0)
-                {
-                    res.status(200);
-                    res.send({token: undefined, userData: usersQuery[0][0]})
-                    res.end();
-                }
-                else
-                {
-                    res.status(404);
-                    res.send({"message": "ERROR: No user is assigned to the given token."})
-                    res.end();
-                }
-            }
-            catch (error)
-            {
-                res.status(503);
-                res.send({"message": "ERROR: " + error})
-                res.end();
-            }
+            
         }
         else if (req.body.email != undefined && req.body.password != undefined)
         {
-            if (req.body.email.length > 0 && req.body.password > 0)
+            if (req.body.email.length > 0 && req.body.password.length > 0)
             {
                 try
                 {
@@ -113,49 +96,89 @@ app.post("/login", jsonParser, seamlessAuth, async (req, res) =>
                         else
                         {
                             res.status(404);
-                            res.send({"message": "ERROR: The given email and password is not valid."})
+                            res.send({message: errorMessages.ERR_INVALID_CREDENTIALS + " (debug: password)"})
                             res.end();
                         }
                     }
                     else
                     {
                         res.status(404);
-                        res.send({"message": "ERROR: The given email and password is not valid."})
+                        res.send({message: errorMessages.ERR_INVALID_CREDENTIALS + " (debug: email)"})
                         res.end();
                     }
                 }
                 catch (error)
                 {
                     res.status(503);
-                    res.send({"message": "ERROR: " + error})
+                    res.send({message: errorMessages.ERR_INTERNAL_SERVER + error})
                     res.end();
                 }
             }
             else
             {
                 res.status(400);
-                res.send({"message": "ERROR: Invalid data was given."})
+                res.send({message: errorMessages.ERR_REQ_INVALID_BODY_VALUES})
                 res.end();
             }
         }
         else
         {
             res.status(400);
-            res.send({"message": "ERROR: Values are not defined."})
+            res.send({message: errorMessages.ERR_REQ_UNDEFINED_BODY_VALUES})
             res.end();
         }
     }
     else
     {
         res.status(400);
-        res.send({"message": "ERROR: The request's body is empty."})
+        res.send({message: errorMessages.ERR_REQ_UNDEFINED_BODY})
+        res.end();
+    }
+})
+
+app.get("/seamlessAuth", jsonParser, seamlessAuth, async (req, res) =>
+{
+    try
+    {
+        let userId = res.locals.userId;
+        let usersQuery = await db.query("SELECT fullname, balance FROM users WHERE id = ?", userId);
+        if (usersQuery[0].length > 0)
+        {
+            res.status(200);
+            res.send({token: undefined, userData: usersQuery[0][0]})
+            res.end();
+        }
+        else
+        {
+            res.status(404);
+            res.send({"message": "ERROR: No user is assigned to the given token."})
+            res.end();
+        }
+    }
+    catch (error)
+    {
+        res.status(503);
+        res.send({"message": "ERROR: " + error})
         res.end();
     }
 })
 
 app.post("/register", jsonParser, async (req, res) =>
 {
-    let hash = await bcrypt.hash(req.body.password, saltRounds)  
+    if (req.body != undefined)
+    {
+        if (req.body.email != undefined && req.body.password != undefined)
+        {
+            let hash = await bcrypt.hash(req.body.password, saltRounds)
+
+        }
+    }
+    else
+    {
+        res.status(400);
+        res.send({"message": errorMessages.ERR_REQ_UNDEFINED_BODY})
+        res.end();
+    }
 })
 
 app.post("/updateProfile", jsonParser, seamlessAuth, async (req, res) =>
@@ -225,6 +248,14 @@ async function seamlessAuth(req, res, next)
         res.status(400);
         res.send({"message": "ERROR: The request's body is empty."})
         res.end();
+    }
+}
+
+function emailValidator(emailAddress)
+{
+    if (emailAddress)
+    {
+
     }
 }
 
