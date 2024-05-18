@@ -31,8 +31,14 @@ const errorMessages = Object.freeze(
     ERR_INTERNAL_SERVER: "ERROR: Internal server error: ",
     ERR_REQ_UNDEFINED_BODY: "ERROR: The request's body is empty.",
     ERR_REQ_UNDEFINED_BODY_VALUES: "ERROR: Values are not defined.",
-    ERR_REQ_INVALID_BODY_VALUES: "ERROR: Invalid data was given.",
-    ERR_INVALID_CREDENTIALS: "ERROR: The given email and password is not valid."
+    ERR_REQ_UNDEFINED_QUERY: "ERROR: The request's query is empty.",
+    ERR_REQ_UNDEFINED_QUERY_VALUES: "ERROR: Values are not defined.",
+    ERR_REQ_INVALID_BODY_VALUES: "ERROR: Invalid data was given to the request's body.",
+    ERR_REQ_INVALID_QUERY_VALUES: "ERROR: Invalid data was given to the request's query.",
+    ERR_INVALID_CREDENTIALS: "ERROR: The given email and password is not valid.",
+    ERR_NO_USER_TO_GIVEN_TOKEN: "ERROR: No user is assigned to the given token.",
+    ERR_TOKEN_NOT_FOUND: "ERROR: Token not found. Please log in again.",
+    ERR_TOKEN_EXPIRED: "ERROR: The token expired. Please log in again."
 })
 const infoMessages = Object.freeze(
 {
@@ -58,23 +64,13 @@ app.get("/register")
 
 //LOGIN endpoint - either give a valid token or the email and password
 //Response: {token: (undefined or a valid token to save), userData: (personal info of the user)}
-app.post("/login", jsonParser, async (req, res) =>
+app.post("/login", jsonParser, async (req, res, next) =>
 {
     if (req.body != undefined)
     {
         if (req.body.token != undefined)
         {
-            /*
-            fetch("/seamlessAuth", 
-            {
-                headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-                },
-                method: "POST",
-                body: JSON.stringify(req.body.token)
-            })
-            */
+            next();
         }
         else if (req.body.email != undefined && req.body.password != undefined)
         {
@@ -145,9 +141,7 @@ app.post("/login", jsonParser, async (req, res) =>
         res.send({message: errorMessages.ERR_REQ_UNDEFINED_BODY})
         res.end();
     }
-})
-
-app.post("/seamlessAuth", jsonParser, seamlessAuth, async (req, res) =>
+}, seamlessAuth, async (req, res) =>
 {
     try
     {
@@ -162,14 +156,14 @@ app.post("/seamlessAuth", jsonParser, seamlessAuth, async (req, res) =>
         else
         {
             res.status(404);
-            res.send({"message": "ERROR: No user is assigned to the given token."})
+            res.send({message: errorMessages.ERR_NO_USER_TO_GIVEN_TOKEN})
             res.end();
         }
     }
     catch (error)
     {
         res.status(503);
-        res.send({"message": "ERROR: " + error})
+        res.send({message: errorMessages.ERR_INTERNAL_SERVER + error})
         res.end();
     }
 })
@@ -229,35 +223,35 @@ async function seamlessAuth(req, res, next)
                     }
                     else
                     {
-                        res.send({"message": "INFO: The token expired. Please log in again."})
+                        res.send({message: errorMessages.ERR_TOKEN_EXPIRED})
                         res.end();
                     }
                 }
                 else
                 {
                     res.status(404);
-                    res.send({"message": "ERROR: Token not found. Please log in again."})
+                    res.send({message: errorMessages.ERR_TOKEN_NOT_FOUND})
                     res.end();
                 }
             }
             catch (error)
             {
                 res.status(503);
-                res.send({"message": "ERROR: " + error})
+                res.send({message: errorMessages.ERR_INTERNAL_SERVER + error})
                 res.end();
             }
         }
         else
         {
             res.status(400);
-            res.send({"message": "ERROR: Values are not defined."})
+            res.send({message: errorMessages.ERR_REQ_UNDEFINED_BODY_VALUES})
             res.end();
         }
     }
     else
     {
         res.status(400);
-        res.send({"message": "ERROR: The request's body is empty."})
+        res.send({message: errorMessages.ERR_REQ_UNDEFINED_BODY})
         res.end();
     }
 }
