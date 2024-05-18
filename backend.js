@@ -1,3 +1,4 @@
+//IMPORTS
 import express from "express";
 import https from "https";
 import { readFileSync } from "fs";
@@ -9,6 +10,7 @@ import cors from 'cors';
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 
+//VALUES
 const app = express();
 const server = https.createServer({
     key: readFileSync("certFiles/keyfile.key"),
@@ -23,15 +25,31 @@ const db = mysql.createPool({
 const jsonParser = bodyParser.json();
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const saltRounds = 10;
-const tokenExpiryInDays = 5;
+const tokenExpiryInDays = 30;
+const errorMessages = Object.freeze(
+{
+    ERR_INTERNAL_SERVER: "",
+    ERR_REQ_UNDEFINED_BODY: "",
+    ERR_REQ_UNDEFINED_BODY_VALUES: "",
+    ERR_REQ_INVALID_BODY_VALUES: ""
+})
 
 app.use(express.static(path.join(__dirname, "public")));
 app.use(cors());
 
+//Fallback root
 app.get("/", (req, res) => 
 {
     res.sendStatus(200);
 })
+
+/*
+
+app.get("/login")
+
+app.get("/register")
+
+*/
 
 //LOGIN endpoint - either give a valid token or the email and password
 //Response: {token: (undefined or a valid token to save), userData: (personal info of the user)}
@@ -41,10 +59,29 @@ app.post("/login", jsonParser, seamlessAuth, async (req, res) =>
     {
         if (req.body.token != undefined)
         {
-            let tokenQuery = await db.query("SELECT userid FROM tokens WHERE token = ?", req.body.token);
-            let usersQuery = await db.query("SELECT fullname, balance FROM users WHERE id = ?", tokenQuery[0][0].userid);
-            res.status(200);
-            res.send({token: undefined, userData: usersQuery[0][0]})
+            try
+            {
+                let userId = res.locals.userId;
+                let usersQuery = await db.query("SELECT fullname, balance FROM users WHERE id = ?", userId);
+                if (usersQuery[0].length > 0)
+                {
+                    res.status(200);
+                    res.send({token: undefined, userData: usersQuery[0][0]})
+                    res.end();
+                }
+                else
+                {
+                    res.status(404);
+                    res.send({"message": "ERROR: No user is assigned to the given token."})
+                    res.end();
+                }
+            }
+            catch (error)
+            {
+                res.status(503);
+                res.send({"message": "ERROR: " + error})
+                res.end();
+            }
         }
         else if (req.body.email != undefined && req.body.password != undefined)
         {
@@ -61,50 +98,58 @@ app.post("/login", jsonParser, seamlessAuth, async (req, res) =>
                             if (isTokenValidBasedOnCurrentDateTime(tokenQuery[0][0].date, tokenExpiryInDays))
                             {
                                 res.status(200);
-                                res.send({token: tokenQuery[0][0], userData: usersQuery[0][0]}).end();
+                                res.send({token: tokenQuery[0][0], userData: usersQuery[0][0]})
+                                res.end();
                             }
                             else
                             {
                                 let token = tokenGenerator(20);
                                 await db.query("INSERT INTO tokens(userid, date, token) VALUES(?, ?, ?)", [usersQuery[0][0].id, new Date(), token]);
                                 res.status(200);
-                                res.send({token: token, userData: usersQuery[0][0]}).end();
+                                res.send({token: token, userData: usersQuery[0][0]})
+                                res.end();
                             }
                         }
                         else
                         {
                             res.status(404);
-                            res.send({"message": "ERROR: The given email and password is not valid."}).end();
+                            res.send({"message": "ERROR: The given email and password is not valid."})
+                            res.end();
                         }
                     }
                     else
                     {
                         res.status(404);
-                        res.send({"message": "ERROR: The given email and password is not valid."}).end();
+                        res.send({"message": "ERROR: The given email and password is not valid."})
+                        res.end();
                     }
                 }
                 catch (error)
                 {
                     res.status(503);
-                    res.send({"message": "ERROR: " + error}).end();
+                    res.send({"message": "ERROR: " + error})
+                    res.end();
                 }
             }
             else
             {
                 res.status(400);
-                res.send({"message": "ERROR: Invalid data was given."}).end();
+                res.send({"message": "ERROR: Invalid data was given."})
+                res.end();
             }
         }
         else
         {
             res.status(400);
-            res.send({"message": "ERROR: Values are not defined."}).end();
+            res.send({"message": "ERROR: Values are not defined."})
+            res.end();
         }
     }
     else
     {
         res.status(400);
-        res.send({"message": "ERROR: The request's body is empty."}).end();
+        res.send({"message": "ERROR: The request's body is empty."})
+        res.end();
     }
 })
 
@@ -115,14 +160,23 @@ app.post("/register", jsonParser, async (req, res) =>
 
 app.post("/updateProfile", jsonParser, seamlessAuth, async (req, res) =>
 {
-    console.log("asd")
+    let userId = res.locals.userId;
+    console.log(userId);
     //await db.query("UPDATE users SET")
+})
+
+app.post("/transfer", jsonParser, seamlessAuth, async (req, res) =>
+{
+    let userId = res.locals.userId;
+    console.log(userId);
+    
 })
 
 server.listen(5555, () => {
     console.log("Backend up! Avaiable at: localhost:5555")
 });
 
+//FUNCTIONS
 async function seamlessAuth(req, res, next)
 {
     if (req.body != undefined)
@@ -136,35 +190,41 @@ async function seamlessAuth(req, res, next)
                 {
                     if (isTokenValidBasedOnCurrentDateTime(tokenQuery[0][0].date, tokenExpiryInDays))
                     {
+                        res.locals.userId = tokenQuery[0][0].userid;
                         next();
                     }
                     else
                     {
-                        res.send({"message": "INFO: The token expired. Please log in again."}).end();
+                        res.send({"message": "INFO: The token expired. Please log in again."})
+                        res.end();
                     }
                 }
                 else
                 {
                     res.status(404);
-                    res.send({"message": "ERROR: Token not found. Please log in again."}).end();
+                    res.send({"message": "ERROR: Token not found. Please log in again."})
+                    res.end();
                 }
             }
             catch (error)
             {
                 res.status(503);
-                res.send({"message": "ERROR: " + error}).end();
+                res.send({"message": "ERROR: " + error})
+                res.end();
             }
         }
         else
         {
             res.status(400);
-            res.send({"message": "ERROR: Values are not defined."}).end();
+            res.send({"message": "ERROR: Values are not defined."})
+            res.end();
         }
     }
     else
     {
         res.status(400);
-        res.send({"message": "ERROR: The request's body is empty."}).end();
+        res.send({"message": "ERROR: The request's body is empty."})
+        res.end();
     }
 }
 

@@ -6,7 +6,7 @@
     <title>Shopping list</title>
 </head>
 <body>
-    <button id="post">login</button>
+    <button id="post">Login</button>
     <br>
     <h3>Error message:</h3>
     <div id="response"></div>
@@ -32,36 +32,6 @@
         {
             document.getElementById("response").innerHTML = await fetch("https://localhost:5555/login", postOption).then(response => response.json()).then(data => Object.values(data));
         })
-        /*
-        //DELETE
-        let deleteOption = {
-            method: "DELETE"
-        }
-        document.getElementById("delete").addEventListener("click", async () => 
-        {
-            document.getElementById("response").innerHTML = await fetch("https://localhost:5555/list?id=3", deleteOption).then(response => response.json()).then(data => Object.values(data));
-        })
-        //PUT
-        let putExampleData = {
-            product: "Test", 
-            amount: 1, 
-            unit: "db", 
-            exp_price: 111, 
-            isbought: false
-        }
-        let putOption = {
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            method: "PUT",
-            body: JSON.stringify(putExampleData)
-        }
-        document.getElementById("put").addEventListener("click", async () => 
-        {
-            document.getElementById("response").innerHTML = await fetch("https://localhost:5555/list?id=2", putOption).then(response => response.json()).then(data => Object.values(data));
-        })
-        */
     </script>
 </body>
 </html>
