@@ -64,7 +64,17 @@ app.post("/login", jsonParser, async (req, res) =>
     {
         if (req.body.token != undefined)
         {
-            
+            /*
+            fetch("/seamlessAuth", 
+            {
+                headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+                },
+                method: "POST",
+                body: JSON.stringify(req.body.token)
+            })
+            */
         }
         else if (req.body.email != undefined && req.body.password != undefined)
         {
@@ -72,7 +82,7 @@ app.post("/login", jsonParser, async (req, res) =>
             {
                 try
                 {
-                    let usersQuery = await db.query("SELECT id, email, password FROM users WHERE email = ?", req.body.email);
+                    let usersQuery = await db.query("SELECT id, password FROM users WHERE email = ?", req.body.email);
                     if (usersQuery[0].length > 0)
                     {
                         if (await bcrypt.compare(req.body.password, usersQuery[0][0].password))
@@ -80,6 +90,7 @@ app.post("/login", jsonParser, async (req, res) =>
                             let tokenQuery = await db.query("SELECT date, token FROM tokens WHERE userid = ?", usersQuery[0][0].id);
                             if (isTokenValidBasedOnCurrentDateTime(tokenQuery[0][0].date, tokenExpiryInDays))
                             {
+                                usersQuery = await db.query("SELECT fullname, balance FROM users WHERE email = ?", req.body.email);
                                 res.status(200);
                                 res.send({token: tokenQuery[0][0], userData: usersQuery[0][0]})
                                 res.end();
@@ -136,7 +147,7 @@ app.post("/login", jsonParser, async (req, res) =>
     }
 })
 
-app.get("/seamlessAuth", jsonParser, seamlessAuth, async (req, res) =>
+app.post("/seamlessAuth", jsonParser, seamlessAuth, async (req, res) =>
 {
     try
     {
