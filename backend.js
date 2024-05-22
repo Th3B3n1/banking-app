@@ -26,19 +26,22 @@ const jsonParser = bodyParser.json();
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const saltRounds = 10;
 const tokenExpiryInDays = 30;
+const minPasswordLength = 8;
 const errorMessages = Object.freeze(
 {
     ERR_INTERNAL_SERVER: "ERROR: Internal server error: ",
     ERR_REQ_UNDEFINED_BODY: "ERROR: The request's body is empty.",
-    ERR_REQ_UNDEFINED_BODY_VALUES: "ERROR: Values are not defined.",
+    ERR_REQ_UNDEFINED_BODY_VALUES: "ERROR: Some or all required values are not defined in the request's body.",
     ERR_REQ_UNDEFINED_QUERY: "ERROR: The request's query is empty.",
-    ERR_REQ_UNDEFINED_QUERY_VALUES: "ERROR: Values are not defined.",
+    ERR_REQ_UNDEFINED_QUERY_VALUES: "ERROR: Some or all required Values are not defined in the request's query.",
     ERR_REQ_INVALID_BODY_VALUES: "ERROR: Invalid data was given to the request's body.",
     ERR_REQ_INVALID_QUERY_VALUES: "ERROR: Invalid data was given to the request's query.",
-    ERR_INVALID_CREDENTIALS: "ERROR: The given email and password is not valid.",
+    ERR_INVALID_CREDENTIALS: "ERROR: The given email and password are not in our database.",
+    ERR_INVALID_PASSWORD: "ERROR: The given password is incorrect based on our database records.",
+    ERR_NONCOMPLIANT_NEWPASSWORD: "ERROR: The given new password is not complying to our required standards.",
     ERR_NO_USER_TO_GIVEN_TOKEN: "ERROR: No user is assigned to the given token.",
     ERR_TOKEN_NOT_FOUND: "ERROR: Token not found. Please log in again.",
-    ERR_TOKEN_EXPIRED: "ERROR: The token expired. Please log in again."
+    ERR_TOKEN_EXPIRED: "ERROR: Token expired. Please log in again."
 })
 const infoMessages = Object.freeze(
 {
@@ -172,10 +175,18 @@ app.post("/register", jsonParser, async (req, res) =>
 {
     if (req.body != undefined)
     {
-        if (req.body.email != undefined && req.body.password != undefined)
+        if ((req.body.email != undefined && req.body.password != undefined) && req.body.fullname != undefined)
         {
-            let hash = await bcrypt.hash(req.body.password, saltRounds)
-
+            if ((emailValidator(req.body.email)))
+            {
+                if (passwordComplianceChecker(req.body.password))
+                {
+                    if (req.body.fullname.length > 0)
+                    {
+                        let hash = await bcrypt.hash(req.body.password, saltRounds)
+                    }
+                }
+            }
         }
     }
     else
@@ -186,11 +197,66 @@ app.post("/register", jsonParser, async (req, res) =>
     }
 })
 
-app.post("/updateProfile", jsonParser, seamlessAuth, async (req, res) =>
+app.post("/changePassword", jsonParser, seamlessAuth, async (req, res) =>
 {
     let userId = res.locals.userId;
-    console.log(userId);
-    //await db.query("UPDATE users SET")
+    if (req.body.oldPassword != undefined && req.body.newPassword != undefined)
+    {
+        if (req.body.oldPassword.length > 0 && req.body.newPassword.length > 0)
+        {
+            try
+            {
+                let usersQuery = await db.query("SELECT password FROM users WHERE id = ?", userId);
+                if (usersQuery[0].length > 0)
+                {
+                    if (await bcrypt.compare(req.body.oldPassword, usersQuery[0][0].password))
+                    {
+                        if (passwordComplianceChecker(req.body.newPassword))
+                        {
+                            let hash = await bcrypt.hash(req.body.newPassword, saltRounds)
+                            await db.query("UPDATE users SET password = ? WHERE id = ?", [hash, userId])
+                        }
+                        else
+                        {
+                            res.status(400);
+                            res.send({message: errorMessages.ERR_NONCOMPLIANT_NEWPASSWORD})
+                            res.end();
+                        }
+                    }
+                    else
+                    {
+                        res.status(400);
+                        res.send({message: errorMessages.ERR_INVALID_PASSWORD})
+                        res.end();
+                    }
+                }
+                else
+                {
+                    res.status(404);
+                    res.send({message: errorMessages.ERR_NO_USER_TO_GIVEN_TOKEN})
+                    res.end();
+                }
+            }
+            catch (error)
+            {
+                res.status(503);
+                res.send({message: errorMessages.ERR_INTERNAL_SERVER + error})
+                res.end();
+            }
+        }
+        else
+        {
+            res.status(400);
+            res.send({message: errorMessages.ERR_REQ_INVALID_BODY_VALUES})
+            res.end();
+        }
+    }
+    else
+    {
+        res.status(400);
+        res.send({message: errorMessages.ERR_REQ_UNDEFINED_BODY_VALUES})
+        res.end();
+    }
 })
 
 app.post("/transfer", jsonParser, seamlessAuth, async (req, res) =>
@@ -261,6 +327,18 @@ function emailValidator(emailAddress)
     if (emailAddress)
     {
 
+    }
+}
+
+function passwordComplianceChecker(password)
+{
+    if (password.length > minPasswordLength)
+    {
+        
+    }
+    else
+    {
+        return false;
     }
 }
 
