@@ -52,7 +52,7 @@ const errorMessages = Object.freeze(
 });
 const infoMessages = Object.freeze(
 {
-
+    INFO_SUCCESSFUL_TRANSACTION: "INFO: Successful transaction."
 });
 
 app.use(express.static(path.join(__dirname, "public")));
@@ -193,6 +193,9 @@ app.post("/register", jsonParser, async (req, res) =>
                                 {
                                     let hash = await bcrypt.hash(req.body.password.trim(), saltRounds);
                                     await db.query("INSERT INTO users(email, password, fullname) VALUES(?, ?, ?)", [req.body.email, hash, req.body.fullname]);
+                                    res.status(200);
+                                    res.send({message: infoMessages.INFO_SUCCESSFUL_TRANSACTION});
+                                    res.end();
                                 }
                                 else
                                 {
@@ -273,6 +276,9 @@ app.post("/changePassword", jsonParser, seamlessAuth, async (req, res) =>
                             {
                                 let hash = await bcrypt.hash(req.body.newPassword.trim(), saltRounds);
                                 await db.query("UPDATE users SET password = ? WHERE id = ?", [hash, userId]);
+                                res.status(200);
+                                res.send({message: infoMessages.INFO_SUCCESSFUL_TRANSACTION});
+                                res.end();
                             }
                             else
                             {
