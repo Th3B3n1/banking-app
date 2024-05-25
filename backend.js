@@ -87,12 +87,23 @@ app.post("/login", jsonParser, async (req, res, next) =>
                         if (await bcrypt.compare(req.body.password, usersQuery[0][0].password))
                         {
                             let tokenQuery = await db.query("SELECT date, token FROM tokens WHERE userid = ?", usersQuery[0][0].id);
-                            if (isTokenValidBasedOnCurrentDateTime(tokenQuery[0][0].date, tokenExpiryInDays))
+                            if (tokenQuery[0].length > 0)
                             {
-                                usersQuery = await db.query("SELECT fullname, balance FROM users WHERE email = ?", req.body.email);
-                                res.status(200);
-                                res.send({token: tokenQuery[0][0], userData: usersQuery[0][0]});
-                                res.end();
+                                if (isTokenValidBasedOnCurrentDateTime(tokenQuery[0][0].date, tokenExpiryInDays))
+                                {
+                                    usersQuery = await db.query("SELECT fullname, balance FROM users WHERE email = ?", req.body.email);
+                                    res.status(200);
+                                    res.send({token: tokenQuery[0][0], userData: usersQuery[0][0]});
+                                    res.end();
+                                }
+                                else
+                                {
+                                    let token = tokenGenerator(20);
+                                    await db.query("INSERT INTO tokens(userid, date, token) VALUES(?, ?, ?)", [usersQuery[0][0].id, new Date(), token]);
+                                    res.status(200);
+                                    res.send({token: token, userData: usersQuery[0][0]});
+                                    res.end();
+                                }
                             }
                             else
                             {
