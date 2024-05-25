@@ -1,7 +1,8 @@
 import './App.css'
 import { Login } from './components/Login';
-import { Register } from './components/Register';
 import { Menu } from './components/Menu';
+import { Register } from './components/Register';
+
 
 function App() {
   return (
