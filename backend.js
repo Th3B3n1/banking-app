@@ -64,15 +64,8 @@ app.get("/", (req, res) =>
     res.sendStatus(200);
 })
 
-/*
-
-app.get("/login")
-
-app.get("/register")
-
-*/
-
 //LOGIN endpoint - either give a valid token or the email and password
+//Mandatory to send: either a token (if previously logged in) or email, password
 //Response: {token: (undefined or a valid token to save), userData: (personal info of the user)}
 app.post("/login", jsonParser, async (req, res, next) =>
 {
@@ -258,6 +251,8 @@ app.post("/register", jsonParser, async (req, res) =>
     }
 })
 
+//CHANGEPASSWORD endpoint - used to change a user's password
+//Mandatory to send: token (saved in a cookie after login), oldPassword, newPassword
 app.post("/changePassword", jsonParser, seamlessAuth, async (req, res) =>
 {
     let userId = res.locals.userId;
