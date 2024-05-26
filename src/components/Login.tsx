@@ -3,7 +3,7 @@ import { Menu } from "./Menu";
 export function Login() {
     let token = localStorage.getItem('token');
     console.log(token);
-    if (token?.length == 5) {
+    if (token !== null) {
         loginfetch(JSON.stringify(token))
     } else {
         return <div id='div_login'>
@@ -41,9 +41,9 @@ export function Login() {
                             document.getElementById("div_login")!.style.display = "none";
                             let fullname = user.userData.fullname;
                             let balance = user.userData.balance;
-                            console.log(fullname + '||' + balance);
+                            console.log(fullname + ' || ' + balance);
                             <Menu fullName={fullname} balance={balance} />
-                            document.getElementById("div_board")!.style.display = "block";
+                            //document.getElementById("div_board")!.style.display = "block";
                         }
                     } else {
                         console.log("asd");
@@ -81,7 +81,7 @@ async function loginfetch(token: string) {
     if (response.status == 200) {
         let fullname = user.userData.fullname;
         let balance = user.userData.balance;
-        document.getElementById("div_board")!.style.display = "block";
+        //document.getElementById("div_board")!.style.display = "block";
         return <Menu fullName={fullname} balance={balance} />
     }
 }

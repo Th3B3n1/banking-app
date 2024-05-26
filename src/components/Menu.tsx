@@ -5,9 +5,20 @@ interface Props {
 
 export function Menu(props: Props) {
   console.log('menu betolt');
+  console.log(props.fullName);
+  console.log(props.balance);
   return <div id='div_board'>
     <p id='full_name'>{props.fullName}</p>
     <p id='balance'>{props.balance}</p>
+    <button id="open_close" onClick={() => {
+      if (document.getElementById("change_password")!.style.display === "none") {
+        document.getElementById("change_password")!.style.display = "block";
+        document.getElementById("open_close")!.innerHTML = "Close";
+      } else {
+        document.getElementById("open_close")!.innerHTML = "Open";
+        document.getElementById("change_password")!.style.display = "none";
+      }
+    }}>Open</button>
     <div id="change_password">
       <h3>Change password</h3>
       <label htmlFor="old_password">Old password: </label><br />
@@ -55,6 +66,7 @@ export function Menu(props: Props) {
 
       }}> Change </button>
     </div>
+    <br />
     <br />
     <button onClick={() => {
       document.getElementById('div_board')!.style.display = 'none';

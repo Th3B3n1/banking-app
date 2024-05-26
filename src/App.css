@@ -8,11 +8,14 @@
 #div_register {
   display: none;
 }
-#div_board {
+/*#div_board {
   display: none;
-}
+}*/
 #div_login {
   display: block;
+}
+#change_password {
+  display: none;
 }
 
 .logo {
