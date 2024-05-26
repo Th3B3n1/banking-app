@@ -4,7 +4,7 @@ export function Login() {
     let token = localStorage.getItem('token');
     console.log(token);
     if (token !== null) {
-        loginfetch(JSON.stringify(token))
+        loginfetch(token)
     } else {
         return <div id='div_login'>
             <h2>Login</h2>
