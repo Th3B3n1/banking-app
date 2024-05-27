@@ -1,35 +1,14 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>(example)Bank internetbank</title>
-</head>
-<body>
-    <button id="post">Login</button>
-    <br>
-    <h3>Error message:</h3>
-    <div id="response"></div>
-    <script type="module">
-        //POST
-        let postExampleData = {
-            //token: "fbbeebece6821e29538323789eac9497572e1033"
-            // or email and PASSWORD
-            email: "test@test.hu",
-            password: "test"
-        }
-        let postOption = {
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            method: "POST",
-            body: JSON.stringify(postExampleData)
-        }
-        document.getElementById("post").addEventListener("click", async () => 
-        {
-            document.getElementById("response").innerHTML = await fetch("https://localhost:5555/login", postOption).then(response => response.json()).then(data => Object.values(data));
-        })
-    </script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite + React + TS</title>
+    <script type="module" crossorigin src="/assets/index-Cnfbk1Rj.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-DiwrgTda.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
 </html>
