@@ -1,12 +1,15 @@
+import { Fetch } from "./Fetch";
+
 interface Props {
   fullName?: string;
   balance?: number;
 }
 
 export function Menu(props: Props) {
-  console.log('menu betolt');
-  console.log(props.fullName);
-  console.log(props.balance);
+  const handleLogout = () => {
+    localStorage.clear();
+    window.location.reload();
+  };
   return <div id='div_board'>
     <p id='full_name'>{props.fullName}</p>
     <p id='balance'>{props.balance}</p>
@@ -39,18 +42,10 @@ export function Menu(props: Props) {
                 newPassword: new_password,
                 token: localStorage.getItem('token')
               }
-              console.log(changes);
-              const response = await fetch("https://localhost:5555/changePassword", {
-                headers: {
-                  'Accept': 'application/json',
-                  'Content-Type': 'application/json'
-                },
-                method: 'POST',
-                body: JSON.stringify(changes),
-              });
-              const data = await response.json();
+              let response = await Fetch("https://localhost:5555/changePassword", changes);
+              let user = await response.json();
               if (response.status != 200) {
-                document.getElementById("menu_error")!.innerHTML = data.message;
+                document.getElementById("menu_error")!.innerHTML = user.message;
               } else {
                 document.getElementById("menu_error")!.innerHTML = "Password changed successfully."
               }
@@ -68,12 +63,7 @@ export function Menu(props: Props) {
     </div>
     <br />
     <br />
-    <button onClick={() => {
-      document.getElementById('div_board')!.style.display = 'none';
-      (document.getElementById("email") as HTMLInputElement).value = '';
-      document.getElementById('div_login')!.style.display = 'block';
-      localStorage.clear();
-    }}>Logout</button>
+    <button onClick={handleLogout}>Logout</button>
   </div>
 
 }

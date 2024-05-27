@@ -1,87 +1,68 @@
+import { useState } from "react";
 import { Menu } from "./Menu";
+import { Fetch } from "./Fetch";
+import { AuthProp } from "./AuthProp";
 
-export function Login() {
-    let token = localStorage.getItem('token');
-    console.log(token);
-    if (token !== null) {
-        loginfetch(token)
-    } else {
-        return <div id='div_login'>
-            <h2>Login</h2>
-            <label htmlFor="email"> Email: </label><br />
-            <input id="email" type="email" placeholder="Email: "></input><br />
-            <label htmlFor="password"> Password: </label><br />
-            <input id="password" type="password" placeholder="Password: "></input><br />
-            <p id="login_error"></p>
-            <button onClick={async () => {
-                let email = (document.getElementById("email") as HTMLInputElement).value;
-                let password = (document.getElementById("password") as HTMLInputElement).value;
-                (document.getElementById("password") as HTMLInputElement).value = '';
+export function Login({ setAuth }: AuthProp) {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
+    const [data, setData] = useState({fullname: "", balance: 0});
+    const [loggedIn, setLoggedIn] = useState(false);
 
-                if (email != '') {
-                    if (password != '') {
-                        const data = {
-                            email: email,
-                            password: password
-                        }
-                        const response = await fetch("https://localhost:5555/login", {
-                            headers: {
-                                'Accept': 'application/json',
-                                'Content-Type': 'application/json'
-                            },
-                            method: 'POST',
-                            body: JSON.stringify(data),
-                        });
-                        const user = await response.json();
-                        if (response.ok) {
-                            console.log(user);
-                            localStorage.setItem("date", user.token.date);
-                            localStorage.setItem("token", user.token.token);
-                            console.log(user.token.token + '||');
-                            document.getElementById("div_login")!.style.display = "none";
-                            let fullname = user.userData.fullname;
-                            let balance = user.userData.balance;
-                            console.log(fullname + ' || ' + balance);
-                            <Menu fullName={fullname} balance={balance} />
-                            //document.getElementById("div_board")!.style.display = "block";
-                        }
-                    } else {
-                        console.log("asd");
-                        document.getElementById("login_error")!.innerHTML = "Password cannot be empty."
+    const handleLogin = async () =>
+    {
+        if (email != "")
+        {
+            if (password != "")
+            {
+                try 
+                {
+                    let data = {
+                        email: email,
+                        password: password
                     }
-                } else {
-                    console.log("asdf");
-                    document.getElementById("login_error")!.innerHTML = "Email cannot be empty."
+                    let response = await Fetch("https://localhost:5555/login", data);
+                    let user = await response.json();
+                    if (response.ok)
+                    {
+                        localStorage.setItem("token", user.token.token);
+                        setLoggedIn(true);
+                        setData(user.userData);
+                    }
+                    else
+                    {
+                        setError(user.message);
+                    }
+                } 
+                catch (error) 
+                {
+                    setError("Request error: " + error);
                 }
             }
-            }> Login </button>
-            <p>Don't have an account? Register <a onClick={() => {
-                document.getElementById("div_login")!.style.display = "none";
-                document.getElementById("div_register")!.style.display = "block";
-                localStorage.clear();
-            }}>here</a>.</p>
-        </div>
+            else
+            {
+                setError("Password cannot be empty.");
+            }
+        }
+        else
+        {
+            setError("Email cannot be empty.");
+        }
     }
-}
-
-async function loginfetch(token: string) {
-    const data = {
-        token: token
+    if (data && loggedIn)
+    {
+        return <Menu fullName={data.fullname} balance={data.balance} />
     }
-    const response = await fetch("https://localhost:5555/login", {
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-        method: 'POST',
-        body: JSON.stringify(data),
-    });
-    const user = await response.json();
-    console.log(user);
-    if (response.status == 200) {
-        let fullname = user.userData.fullname;
-        let balance = user.userData.balance;
-        //document.getElementById("div_board")!.style.display = "block";
-        return <Menu fullName={fullname} balance={balance} />
-    }
+    return( 
+    <div id='div_login'>
+        <h2>Login</h2>
+        <label htmlFor="email"> Email: </label><br />
+        <input id="email" type="email" placeholder="Email: " onChange={(e) => setEmail(e.target.value)}></input><br />
+        <label htmlFor="password"> Password: </label><br />
+        <input id="password" type="password" placeholder="Password: " onChange={(e) => setPassword(e.target.value)}></input><br />
+        <p id="login_error">{error}</p>
+        <button onClick={handleLogin}> Login </button>
+        <p>Don't have an account? Register <a onClick={setAuth}>here</a>.</p>
+    </div>)
 }

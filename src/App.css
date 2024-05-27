@@ -5,19 +5,6 @@
   text-align: center;
 }
 
-#div_register {
-  display: none;
-}
-/*#div_board {
-  display: none;
-}*/
-#div_login {
-  display: block;
-}
-#change_password {
-  display: none;
-}
-
 .logo {
   height: 6em;
   padding: 1.5em;
