@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
+   sodipodi:docname="otp_copy_logo.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     inkscape:zoom="0.69219276"
+     inkscape:cx="395.84349"
+     inkscape:cy="786.63059"
+     inkscape:window-width="1920"
+     inkscape:window-height="991"
+     inkscape:window-x="-9"
+     inkscape:window-y="-9"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1" />
+  <g
+     inkscape:label="Réteg 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <ellipse
+       style="fill:#ff5959;fill-opacity:1;stroke-width:0.264999"
+       id="path2"
+       cx="-119.32803"
+       cy="160.04306"
+       rx="45.666"
+       ry="44.435383"
+       transform="scale(-1,1)" />
+    <path
+       id="path3"
+       style="fill:#6f1e00;fill-opacity:1;stroke-width:0.264999"
+       d="m 119.66032,70.716179 a 87.341751,88.870772 0 0 1 81.0873,54.469111 87.341751,88.870772 0 0 1 -18.57763,97.04106 87.341751,88.870772 0 0 1 -95.251006,19.51844 87.341751,88.870772 0 0 1 -54.046201,-82.16008 h 25.747584 a 62.070292,65.507834 0 0 0 38.284542,60.06403 62.070292,65.507834 0 0 0 67.644081,-14.20097 62.070292,65.507834 0 0 0 13.454,-71.39012 62.070292,65.507834 0 0 0 -57.34526,-40.439041 v 0.18216 c -0.29037,0.0695 -0.57663,0.1757 -0.85117,0.32577 z M 58.620367,159.58471 a 62.070292,65.507834 0 0 1 -0.03225,-0.45829 h 2.220164 c 0.06217,0.15485 0.134548,0.30791 0.218061,0.45829 z" />
+    <ellipse
+       style="fill:#ff1616;fill-opacity:1;stroke-width:0.264999"
+       id="ellipse6"
+       cx="-67.454971"
+       cy="106.44576"
+       rx="22.167965"
+       ry="21.988642"
+       transform="scale(-1,1)" />
+  </g>
+</svg>
