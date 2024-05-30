@@ -3,8 +3,6 @@ import './App.css'
 import { Fetch } from './components/Fetch'
 import { Menu } from './components/Menu'
 import { Auth } from './components/Auth'
-import bckimg from '../public/OTP_header_img.jpg'
-import logo from '../public/otp_copy_logo.svg'
 
 function App() {
   const [response, setResponse] = useState({fullname: "", balance: 0})

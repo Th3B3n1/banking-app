@@ -1,22 +1,22 @@
-  .container {  
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: 70vh 30vh;
-    gap: 0px 0px;
-    grid-auto-flow: row;
-    background: lightgray;/*error*/
-    font-family: Georgia, 'Times New Roman', Times, serif;
-  }
-  
-  .img { grid-area: 1 / 1 / 2 / 2; }
-  .text { 
-    grid-area: 2 / 1 / 2 / 2; 
-    text-align: right;
-    color: black;
-    padding-right: 5%;
-    margin-left: 40%;
-    margin-top: 2%;
-  }
+.container {  
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 70vh 30vh;
+  gap: 0px 0px;
+  grid-auto-flow: row;
+  background: lightgray;/*error*/
+  font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+.img { grid-area: 1 / 1 / 2 / 2; }
+.text { 
+  grid-area: 2 / 1 / 2 / 2; 
+  text-align: right;
+  color: black;
+  padding-right: 5%;
+  margin-left: 40%;
+  margin-top: 2%;
+}
   
 #img_logo{
   width: 20%;
