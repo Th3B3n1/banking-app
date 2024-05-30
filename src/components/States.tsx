@@ -1,0 +1,6 @@
+export enum States
+{
+  DISPLAY_LOGIN,
+  DISPLAY_REGISTER,
+  DISPLAY_MENU
+}
