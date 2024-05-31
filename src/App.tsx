@@ -44,7 +44,7 @@ function App() {
     sync();
   }, [])
   return(
-    <div>
+    <div id="main">
       {loggedIn ? <Menu fullName={response.fullname} balance={response.balance}/> : <Auth />}
     </div>
   )

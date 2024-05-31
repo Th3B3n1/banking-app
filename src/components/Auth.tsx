@@ -8,6 +8,7 @@ export function Auth()
     const [state, setState] = useState(States.DISPLAY_LOGIN);
     const setAuth = () =>
     {
+        console.log(state);
         switch (state)
         {
             case States.DISPLAY_LOGIN:
@@ -22,7 +23,7 @@ export function Auth()
         }
     }
     return(
-        <div>
+        <div id="auth">
             {state == States.DISPLAY_LOGIN ? <Login setAuth={setAuth} /> : <Register setAuth={setAuth}/>}
         </div>
     )
