@@ -48,7 +48,8 @@ const errorMessages = Object.freeze(
     ERR_DATA_SAME_OLD_AND_NEW_PASSWORD: "ERROR: The old and new password has the same value.",
     ERR_DATA_NO_USER_TO_GIVEN_TOKEN: "ERROR: No user is assigned to the given token.",
     ERR_DATA_TOKEN_NOT_FOUND: "ERROR: Token not found. Please log in again.",
-    ERR_DATA_TOKEN_EXPIRED: "ERROR: Token expired. Please log in again."
+    ERR_DATA_TOKEN_EXPIRED: "ERROR: Token expired. Please log in again.",
+    ERR_ENDPOINT_NOT_FUNCTIONAL: "ERROR: This endpoint is not functional."
 });
 const infoMessages = Object.freeze(
 {
@@ -117,14 +118,14 @@ app.post("/login", jsonParser, async (req, res, next) =>
                         else
                         {
                             res.status(404);
-                            res.send({message: errorMessages.ERR_DATA_INVALID_CREDENTIALS + " (debug: password)"});
+                            res.send({message: errorMessages.ERR_DATA_INVALID_CREDENTIALS});
                             res.end();
                         }
                     }
                     else
                     {
                         res.status(404);
-                        res.send({message: errorMessages.ERR_DATA_INVALID_CREDENTIALS + " (debug: email)"});
+                        res.send({message: errorMessages.ERR_DATA_INVALID_CREDENTIALS});
                         res.end();
                     }
                 }
@@ -341,11 +342,14 @@ app.post("/changePassword", jsonParser, seamlessAuth, async (req, res) =>
     }
 })
 
-app.post("/transfer", jsonParser, seamlessAuth, async (req, res) =>
+app.post("/transfer", jsonParser, /*seamlessAuth,*/ async (req, res) =>
 {
+    /*
     let userId = res.locals.userId;
     console.log(userId);
-    
+    */
+    res.status(503);
+    res.send({message: errorMessages.ERR_ENDPOINT_NOT_FUNCTIONAL});
 })
 
 server.listen(5555, () => {
