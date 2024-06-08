@@ -22,8 +22,8 @@ export function Auth()
         }
     }
     return(
-        <div>
-            {state == States.DISPLAY_LOGIN ? <Login setAuth={setAuth} /> : <Register setAuth={setAuth}/>}
-        </div>
+    <div id="auth">
+        {state == States.DISPLAY_LOGIN ? <Login setAuth={setAuth} /> : <Register setAuth={setAuth}/>}
+    </div>
     )
 }

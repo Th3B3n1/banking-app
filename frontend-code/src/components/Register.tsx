@@ -2,6 +2,7 @@ import { useState } from "react";
 import { AuthProp } from "../functions/AuthProp";
 import { Fetch } from "../functions/Fetch";
 import { Login } from "./Login";
+import { Form, FloatingLabel, Button } from "react-bootstrap";
 
 export function Register({ setAuth } : AuthProp) {
     const [fullName, setFullName] = useState("");
@@ -10,6 +11,7 @@ export function Register({ setAuth } : AuthProp) {
     const [password, setPassword] = useState("");
     const [passwordAgain, setPasswordAgain] = useState("");
     const [registered, setRegistered] = useState(false);
+    const [textDesign, setTextDesign] = useState("link-danger");
     const [error, setError] = useState("");
 
     const handleRegistration = async () =>
@@ -34,6 +36,11 @@ export function Register({ setAuth } : AuthProp) {
                             if (response.status == 200)
                             {
                                 setRegistered(true);
+                                setTextDesign("link-success");
+                            }
+                            else
+                            {
+                                setTextDesign("link-danger");
                             }
                             setError(user.message);
                         }
@@ -69,21 +76,27 @@ export function Register({ setAuth } : AuthProp) {
     }
 
     return(
-    <div id='div_register'>
+    <Form className="card p-2">
         <h2>Register</h2>
-        <label htmlFor="register_fullname"> Full name: </label><br />
-        <input id="register_fullname" type="text" placeholder="Full name: " onChange={(e) => setFullName(e.target.value)}></input><br />
-        <label htmlFor="register_email"> Email: </label><br />
-        <input id="register_email" type="email" placeholder="Email: " onChange={(e) => setEmail(e.target.value)}></input><br />
-        <label htmlFor="register_email_again"> Confirm email: </label><br />
-        <input id="register_email_again" type="email" placeholder="Confirm email: " onChange={(e) => setEmailAgain(e.target.value)}></input><br />
-        <p>*The password must contain at least 8 characters, 1 lowercase and 1 uppercase letters, 1 number and 1 special character.</p>
-        <label htmlFor="register_password"> Password: </label><br />
-        <input id="register_password" type="password" placeholder="Password: " onChange={(e) => setPassword(e.target.value)}></input><br />
-        <label htmlFor="register_password_again"> Confirm password: </label><br />
-        <input id="register_password_again" type="password" placeholder="Confirm password: " onChange={(e) => setPasswordAgain(e.target.value)}></input><br />
-        <p id="reg_error">{error}</p>
-        <button onClick={handleRegistration}> Register </button>
-        <p>Already have an account? Click <a onClick={setAuth}>here</a> to login.</p>
-    </div>)
+        <FloatingLabel controlId="floatingFullName" label="Full name">
+            <Form.Control type="text" placeholder="Full name" onChange={(e) => setFullName(e.target.value)}/>
+        </FloatingLabel>
+        <FloatingLabel controlId="floatingEmail" label="Email">
+            <Form.Control type="email" placeholder="Email" onChange={(e) => setEmail(e.target.value)}/>
+        </FloatingLabel>
+        <FloatingLabel controlId="floatingConfirmEmail" label="Confirm email">
+            <Form.Control type="email" placeholder="Confirm email" onChange={(e) => setEmailAgain(e.target.value)}/>
+        </FloatingLabel>
+        <FloatingLabel controlId="floatingPassword" label="Password">
+            <Form.Control type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)}/>
+        </FloatingLabel>
+        <FloatingLabel controlId="floatingConfirmPassword" label="Confirm password">
+            <Form.Control type="password" placeholder="Confirm password" onChange={(e) => setPasswordAgain(e.target.value)}/>
+        </FloatingLabel>
+        <Form.Text>The password must contain at least 8 characters, 1 lowercase and 1 uppercase letters, 1 number and 1 special character.</Form.Text>
+        <Form.Text className={textDesign}>{error}</Form.Text>
+        <Button className="w-100 py-2" onClick={handleRegistration}>Register</Button>
+        <p>Already have an account? Click <a className="link-primary" onClick={setAuth}>here</a> to login.</p>
+    </Form>
+    )
 }

@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
-import './App.css'
 import { Fetch } from './functions/Fetch'
 import { Menu } from './components/Menu'
 import { Auth } from './components/Auth'
+import './App.css'
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
   const [response, setResponse] = useState({fullname: "", balance: 0})
@@ -44,9 +45,9 @@ function App() {
     sync();
   }, [])
   return(
-    <div>
-      {loggedIn ? <Menu fullName={response.fullname} balance={response.balance}/> : <Auth />}
-    </div>
+  <>
+    {loggedIn ? <Menu fullName={response.fullname} balance={response.balance}/> : <Auth />}
+  </>
   )
 }
 
