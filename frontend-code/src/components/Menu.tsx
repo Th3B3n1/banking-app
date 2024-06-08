@@ -1,69 +1,90 @@
+import { useState } from "react";
 import { Fetch } from "../functions/Fetch";
+import { Button, FloatingLabel, Form } from "react-bootstrap";
 
 interface Props {
   fullName?: string;
   balance?: number;
 }
 
-export function Menu(props: Props) {
+export function Menu(props: Props) 
+{
+  const [oldPassword, setOldPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [textDesign, setTextDesign] = useState("link-danger");
+  const [error, setError] = useState("");
+
+  const handleChangePassword = async () =>
+  {
+    if (oldPassword != '' && newPassword != '') 
+    {
+      if (newPassword.length > 7) 
+      {
+        if (oldPassword != newPassword) 
+        {
+          const changes = {
+            oldPassword: oldPassword,
+            newPassword: newPassword,
+            token: localStorage.getItem('token')
+          }
+          try
+          {
+            let response = await Fetch("https://localhost:5555/changePassword", changes);
+            let user = await response.json();
+            if (response.status == 200)
+            {
+              setTextDesign("link-success");
+            }
+            else
+            {
+              setTextDesign("link-danger");
+            }
+            setError(user.message);
+          }
+          catch (error) 
+          {
+            setError("Request error: " + error);
+          }
+        } 
+        else 
+        {
+          setError("Passwords cannot be the same.");
+        }
+      } 
+      else 
+      {
+        setError("Password needs to be at least 8 characters long.");
+      }
+    } 
+    else 
+    {
+      setError("Password(s) cannot be empty.");
+    }
+  }
   const handleLogout = () => {
     localStorage.clear();
     window.location.reload();
   };
-  return <div id='div_board'>
-    <p id='full_name'>{props.fullName}</p>
-    <p id='balance'>{props.balance}</p>
-    <button id="open_close" onClick={() => {
-      if (document.getElementById("change_password")!.style.display === "none") {
-        document.getElementById("change_password")!.style.display = "block";
-        document.getElementById("open_close")!.innerHTML = "Close";
-      } else {
-        document.getElementById("open_close")!.innerHTML = "Open";
-        document.getElementById("change_password")!.style.display = "none";
-      }
-    }}>Open</button>
-    <div id="change_password">
+  return( 
+  <Form>
+    <Form.Group className="text-start card p-2">
+      <h2>Name: {props.fullName}</h2>
+      <h2>Balance: {props.balance}Ft</h2>
+    </Form.Group>
+    <Form.Group id="changePassword" className="card p-2">
       <h3>Change password</h3>
-      <label htmlFor="old_password">Old password: </label><br />
-      <input type="password" id="old_password" placeholder="Old password"></input><br />
-      <p>*Passwords must contain at least 8 characters, 1 lowercase and 1 uppercase letters, 1 number and 1 special character.</p>
-      <label htmlFor="new_password">New password: </label><br />
-      <input type="password" id="new_password" placeholder="New password"></input><br />
-      <p id="menu_error"></p>
-      <button onClick={async () => {
-        let old_password = (document.getElementById("old_password") as HTMLInputElement).value;
-        let new_password = (document.getElementById("new_password") as HTMLInputElement).value;
-
-        if (old_password != '' && new_password != '') {
-          if (new_password.length > 7) {
-            if (old_password != new_password) {
-              const changes = {
-                oldPassword: old_password,
-                newPassword: new_password,
-                token: localStorage.getItem('token')
-              }
-              let response = await Fetch("https://localhost:5555/changePassword", changes);
-              let user = await response.json();
-              if (response.status != 200) {
-                document.getElementById("menu_error")!.innerHTML = user.message;
-              } else {
-                document.getElementById("menu_error")!.innerHTML = "Password changed successfully."
-              }
-            } else {
-              document.getElementById("menu_error")!.innerHTML = "Passwords cannot be the same."
-            }
-          } else {
-            document.getElementById("menu_error")!.innerHTML = "Password needs to be at least 8 characters long.";
-          }
-        } else {
-          document.getElementById("menu_error")!.innerHTML = "Password(s) cannot be empty."
-        }
-
-      }}> Change </button>
-    </div>
+      <FloatingLabel controlId="floatingOldPassword" label="Old password">
+          <Form.Control type="password" placeholder="Old password" onChange={(e) => setOldPassword(e.target.value)}/>
+      </FloatingLabel>
+      <FloatingLabel controlId="floatingNewPassword" label="New password">
+          <Form.Control type="password" placeholder="New password" onChange={(e) => setNewPassword(e.target.value)}/>
+      </FloatingLabel>
+      <Form.Text>*Passwords must contain at least 8 characters, 1 lowercase and 1 uppercase letters, 1 number and 1 special character.</Form.Text>
+      <Form.Text className={textDesign}>{error}</Form.Text>
+      <Button className="py-2" onClick={handleChangePassword}> Change </Button>
+    </Form.Group>
     <br />
-    <br />
-    <button onClick={handleLogout}>Logout</button>
-  </div>
-
+    <Button className="py-2" onClick={handleLogout}>Logout</Button>
+  </Form>
+  )
 }

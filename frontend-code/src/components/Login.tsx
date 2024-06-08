@@ -1,14 +1,16 @@
 import { useState } from "react";
-import { Menu } from "./Menu";
-import { Fetch } from "../functions/Fetch";
 import { AuthProp } from "../functions/AuthProp";
+import { Fetch } from "../functions/Fetch";
+import { Menu } from "./Menu";
+import { Form, FloatingLabel, Button } from "react-bootstrap";
 
 export function Login({ setAuth }: AuthProp) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
     const [data, setData] = useState({fullname: "", balance: 0});
     const [loggedIn, setLoggedIn] = useState(false);
+    const [textDesign, setTextDesign] = useState("link-danger");
+    const [error, setError] = useState("");
 
     const handleLogin = async () =>
     {
@@ -24,15 +26,17 @@ export function Login({ setAuth }: AuthProp) {
                     }
                     let response = await Fetch("https://localhost:5555/login", data);
                     let user = await response.json();
-                    if (response.ok)
+                    if (response.status == 200)
                     {
                         localStorage.setItem("token", user.token.token);
                         setLoggedIn(true);
                         setData(user.userData);
+                        setTextDesign("link-success");
                     }
                     else
                     {
                         setError(user.message);
+                        setTextDesign("link-danger");
                     }
                 } 
                 catch (error) 
@@ -54,15 +58,18 @@ export function Login({ setAuth }: AuthProp) {
     {
         return <Menu fullName={data.fullname} balance={data.balance} />
     }
-    return( 
-    <div id='div_login'>
+    return(
+    <Form className="card p-2"> 
         <h2>Login</h2>
-        <label htmlFor="email"> Email: </label><br />
-        <input id="email" type="email" placeholder="Email: " onChange={(e) => setEmail(e.target.value)}></input><br />
-        <label htmlFor="password"> Password: </label><br />
-        <input id="password" type="password" placeholder="Password: " onChange={(e) => setPassword(e.target.value)}></input><br />
-        <p id="login_error">{error}</p>
-        <button onClick={handleLogin}> Login </button>
-        <p>Don't have an account? Register <a onClick={setAuth}>here</a>.</p>
-    </div>)
+        <FloatingLabel controlId="floatingEmail" label="Email">
+            <Form.Control type="email" placeholder="Email" onChange={(e) => setEmail(e.target.value)}/>
+        </FloatingLabel>
+        <FloatingLabel controlId="floatingPassword" label="Password">
+            <Form.Control type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)}/>
+        </FloatingLabel>
+        <Form.Text className={textDesign}>{error}</Form.Text>
+        <Button className="w-100 py-2" onClick={handleLogin}>Login</Button>
+        <p>Don't have an account? Register <a className="link-primary" onClick={setAuth}>here</a>.</p>
+    </Form>
+    )
 }
