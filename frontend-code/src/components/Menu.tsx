@@ -1,4 +1,4 @@
-import { Fetch } from "./Fetch";
+import { Fetch } from "../functions/Fetch";
 
 interface Props {
   fullName?: string;

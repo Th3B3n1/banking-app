@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Menu } from "./Menu";
-import { Fetch } from "./Fetch";
-import { AuthProp } from "./AuthProp";
+import { Fetch } from "../functions/Fetch";
+import { AuthProp } from "../functions/AuthProp";
 
 export function Login({ setAuth }: AuthProp) {
     const [email, setEmail] = useState("");

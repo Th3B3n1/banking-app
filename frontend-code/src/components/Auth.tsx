@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { States } from "./States";
+import { States } from "../functions/States";
 import { Login } from "./Login";
 import { Register } from "./Register";
 

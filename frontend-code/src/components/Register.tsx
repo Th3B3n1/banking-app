@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { AuthProp } from "./AuthProp";
-import { Fetch } from "./Fetch";
+import { AuthProp } from "../functions/AuthProp";
+import { Fetch } from "../functions/Fetch";
 import { Login } from "./Login";
 
 export function Register({ setAuth } : AuthProp) {

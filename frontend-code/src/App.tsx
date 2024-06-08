@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import './App.css'
-import { Fetch } from './components/Fetch'
+import { Fetch } from './functions/Fetch'
 import { Menu } from './components/Menu'
 import { Auth } from './components/Auth'
 
