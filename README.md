@@ -1,5 +1,25 @@
-# banking-app
+# Banking App
 
-A fully functional frontend and backend that tries to replicate how a bare-bones banking app theoretically works. This was a school project that required the use of the followings:
-      - React for the frontend (or something similar like Angular)
-      - Node.js for the backend (NestJS could have been used, but I don't have a lot of experience with it)
+A simple banking application built as a school project. It includes both frontend and backend components to simulate basic banking operations. The frontend is developed using React, while the backend is implemented with Node.js.
+
+## Table of Contents
+
+- [Features](#features)
+- [Technologies Used](#technologies-used)
+
+## Features
+
+- User account creation and authentication
+- Basic banking operations: deposits, withdrawals, balance checking - Not yet implemented -
+- User-friendly interface for managing bank accounts
+
+## Technologies Used
+
+### Frontend
+- React
+
+### Backend
+- Node.js with express
+
+### Database
+- MySQL
